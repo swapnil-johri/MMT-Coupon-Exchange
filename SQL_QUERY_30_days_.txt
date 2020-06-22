@@ -1,0 +1,61 @@
+select * from
+((select BKG_HTLSEQ, BKG_CITYCD, round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE), 2) as GMV, 
+round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE), 2) as GR,
+round(((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE)/(sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE)) * 100, 2) as GRASP, ATTRIBUTE_VALUE
+from booking b
+inner join htl_extended_info hei
+on hei.HTLSEQ = b.BKG_HTLSEQ
+inner join booking_promotion bp
+on bp.BKP_BKINGSEQ = b.BKG_BKINGSEQ
+where (BKG_MMTCNFMID = 'NH2%' or BKG_MMTCNFMID = 'NH3%' or BKG_MMTCNFMID = 'NH7%' or BKG_MMTCNFMID != 'NH27%') and 
+      (BKG_FNAME not like "test%" or BKG_HTLNAME not like "test%") and BKG_BKINGDT >= subdate(curdate(), INTERVAL 7 DAY) and (ATTRIBUTE_TYPE = 'HOTEL_ECOUPON_CATEGORY')
+      and BKG_CTYCD not in ('IN','GL') and bkg_orgbkingstat = 'confirmed' and BKG_CITYCD != 'HC20100719133546966' and bkg_bkingsrc in ('b2ctvg','Hotel','b2ctab','mob') and bkg_cityname != 'testingcityc' 
+      and bkg_mmtpayhtlcost!='0' and (BKG_EMAIL not like '%-QA@makemytrip.com' and BKG_EMAIL not like 'computgreen1111222@gmail.com' 
+      and BKG_EMAIL not like 'reachemailherenow0201@gmail.com' and BKG_EMAIL not like 'emailgreen2020@gmail.com'  
+      and BKG_EMAIL not like 'comput.emailgreen221122@gmail.com' and bkg_email not like 'emailgreen.idfornet212@gmail.com' 
+      and bkg_email not like 'computemailaddress.here212@gmail.com' and bkg_email not like 'Rentaavis@gmail.com'
+      and bkg_Email not like 'Rentavis@prodigy.net.mx') and (BKG_MMTCNFMID not like 'NH27%') 
+      and (BKG_ORGBKINGSTAT not in ('FAILED'))  
+      and bkg_htlname not like '%HKTTET%'
+group by(BKG_HTLSEQ)
+UNION
+select BKG_HTLSEQ, BKG_CITYCD, round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE), 2) as GMV, 
+round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE), 2) as GR,
+round(((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE)/(sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE)) * 100, 2) as GRASP,  ATTRIBUTE_VALUE
+from booking b
+inner join htl_extended_info hei
+on hei.HTLSEQ = b.BKG_HTLSEQ
+inner join booking_promotion bp
+on bp.BKP_BKINGSEQ = b.BKG_BKINGSEQ
+where (BKG_MMTCNFMID = 'NH2%' or BKG_MMTCNFMID = 'NH3%' or BKG_MMTCNFMID = 'NH7%' or BKG_MMTCNFMID != 'NH27%') and 
+      (BKG_FNAME not like "test%" or BKG_HTLNAME not like "test%") and BKG_BKINGDT >= subdate(curdate(), INTERVAL 14 DAY) and BKG_BKINGDT < subdate(curdate(), INTERVAL 7 DAY)
+      and (ATTRIBUTE_TYPE = 'HOTEL_ECOUPON_CATEGORY')
+      and BKG_CTYCD not in ('IN','GL') and bkg_orgbkingstat = 'confirmed' and BKG_CITYCD != 'HC20100719133546966' and bkg_bkingsrc in ('b2ctvg','Hotel','b2ctab','mob') and bkg_cityname != 'testingcityc' 
+      and bkg_mmtpayhtlcost!='0' and (BKG_EMAIL not like '%-QA@makemytrip.com' and BKG_EMAIL not like 'computgreen1111222@gmail.com' 
+      and BKG_EMAIL not like 'reachemailherenow0201@gmail.com' and BKG_EMAIL not like 'emailgreen2020@gmail.com'  
+      and BKG_EMAIL not like 'comput.emailgreen221122@gmail.com' and bkg_email not like 'emailgreen.idfornet212@gmail.com' 
+      and bkg_email not like 'computemailaddress.here212@gmail.com' and bkg_email not like 'Rentaavis@gmail.com'
+      and bkg_Email not like 'Rentavis@prodigy.net.mx') and (BKG_MMTCNFMID not like 'NH27%') 
+      and (BKG_ORGBKINGSTAT not in ('FAILED'))  
+      and bkg_htlname not like '%HKTTET%'
+group by(BKG_HTLSEQ)) 
+union
+select BKG_HTLSEQ, BKG_CITYCD, round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE), 2) as GMV, 
+round((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE), 2) as GR,
+round(((sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0) - BKG_MMTPAYHTLCOST - BKG_SERVICETAX)/BKG_CONVRATE)/(sum(BKG_TOTMMTCUSTCOST + ifnull(BKG_ECOUPONAMT, 0) + ifnull(BKP_PROMOAMT,0))/BKG_CONVRATE)) * 100, 2) as GRASP,  ATTRIBUTE_VALUE
+from booking b
+inner join htl_extended_info hei
+on hei.HTLSEQ = b.BKG_HTLSEQ
+inner join booking_promotion bp
+on bp.BKP_BKINGSEQ = b.BKG_BKINGSEQ
+where (BKG_MMTCNFMID = 'NH2%' or BKG_MMTCNFMID = 'NH3%' or BKG_MMTCNFMID = 'NH7%' or BKG_MMTCNFMID != 'NH27%') and 
+      (BKG_FNAME not like "test%" or BKG_HTLNAME not like "test%") and BKG_BKINGDT >= subdate(curdate(), INTERVAL 29 DAY) and BKG_BKINGDT < subdate(curdate(), INTERVAL 14 DAY) and (ATTRIBUTE_TYPE = 'HOTEL_ECOUPON_CATEGORY') 
+      and BKG_CTYCD not in ('IN','GL') and bkg_orgbkingstat = 'confirmed' and BKG_CITYCD != 'HC20100719133546966' and bkg_bkingsrc in ('b2ctvg','Hotel','b2ctab','mob') and bkg_cityname != 'testingcityc' 
+      and bkg_mmtpayhtlcost!='0' and (BKG_EMAIL not like '%-QA@makemytrip.com' and BKG_EMAIL not like 'computgreen1111222@gmail.com' 
+      and BKG_EMAIL not like 'reachemailherenow0201@gmail.com' and BKG_EMAIL not like 'emailgreen2020@gmail.com'  
+      and BKG_EMAIL not like 'comput.emailgreen221122@gmail.com' and bkg_email not like 'emailgreen.idfornet212@gmail.com' 
+      and bkg_email not like 'computemailaddress.here212@gmail.com' and bkg_email not like 'Rentaavis@gmail.com'
+      and bkg_Email not like 'Rentavis@prodigy.net.mx') and (BKG_MMTCNFMID not like 'NH27%') 
+      and (BKG_ORGBKINGSTAT not in ('FAILED'))  
+      and bkg_htlname not like '%HKTTET%'
+group by(BKG_HTLSEQ)) a group by(BKG_HTLSEQ);
